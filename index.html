@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090a0f">
+<title>Kinder's Wishlist</title>
+<style>
+:root{--bg:#090a0f;--panel:#12141d;--panel2:#191c28;--text:#f4f5fb;--muted:#9da3b5;--red:#ef334b;--line:#292d3b;--gold:#d9b779}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -10%,#35121c 0,transparent 38%),radial-gradient(ellipse at 0 35%,#171b31 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+.wrap{max-width:1120px;margin:auto;padding:28px 20px 70px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:54px}.brand{font-weight:850;letter-spacing:.12em;font-size:13px;color:#fff}.brand span{color:var(--red)}.tag{font-size:12px;color:var(--gold);border:1px solid #6b5635;padding:8px 12px;border-radius:99px;background:#241e16}
+.hero{max-width:760px;margin-bottom:34px}.eyebrow{color:var(--red);font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}.hero h1{font-size:clamp(42px,8vw,76px);line-height:.98;letter-spacing:-.055em;margin:14px 0}.hero h1 em{font-style:normal;color:var(--red)}.hero p{color:var(--muted);font-size:16px;line-height:1.6;margin:16px 0 0}.stats{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 34px}.stat{background:#12141ddd;border:1px solid var(--line);padding:12px 16px;border-radius:14px;color:var(--muted);font-size:12px}.stat b{display:block;color:var(--text);font-size:18px;margin-bottom:2px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:32px 0 18px}.toolbar h2{font-size:21px;margin:0;letter-spacing:-.03em}.hint{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.card{background:linear-gradient(155deg,#191c27,#10121a 70%);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:.2s;position:relative}.card:hover{transform:translateY(-4px);border-color:#55505b;box-shadow:0 16px 40px #0007}.photo{height:190px;background:linear-gradient(135deg,#242838,#141620);display:flex;align-items:center;justify-content:center;color:#737b91;font-size:12px;overflow:hidden}.photo img{width:100%;height:100%;object-fit:cover}.placeholder{font-size:42px;opacity:.75}.body{padding:17px}.category{color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:800}.body h3{font-size:18px;margin:8px 0 6px}.desc{color:var(--muted);font-size:13px;min-height:34px;line-height:1.45}.price{font-size:19px;font-weight:800;margin:13px 0}.actions{display:flex;gap:8px}.btn{border:0;border-radius:10px;padding:11px 13px;font-weight:750;cursor:pointer;text-decoration:none;text-align:center;font-size:12px}.primary{background:var(--red);color:white;flex:1}.secondary{background:#252938;color:#d9dceb}.bought{opacity:.55}.bought .body h3{text-decoration:line-through}.pill{position:absolute;top:12px;left:12px;background:#251c20;border:1px solid #71313d;color:#ff8291;padding:6px 9px;border-radius:99px;font-size:10px;font-weight:800}.empty{border:1px dashed #3b4052;border-radius:18px;padding:34px;text-align:center;color:var(--muted);grid-column:1/-1}.footer{margin-top:55px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#777f93;font-size:11px}
+@media(max-width:600px){.wrap{padding:20px 14px 50px}.top{margin-bottom:42px}.tag{font-size:10px}.photo{height:170px}.toolbar{align-items:flex-end}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><div class="brand">KINDER<span>•</span>WISHLIST</div><div class="tag">🎂 BIRTHDAY EDITION · 2026</div></header>
+  <section class="hero">
+    <div class="eyebrow">MY PERSONAL WISHLIST</div>
+    <h1>Мої бажання.<br><em>Твій вибір.</em></h1>
+    <p>Тут зібрані подарунки, які я справді хочу. Обирай те, що сподобалося, а посилання допоможуть швидко знайти потрібну річ.</p>
+    <div class="stats">
+      <div class="stat"><b id="count">0</b>подарунків у списку</div>
+      <div class="stat"><b id="done">0</b>вже позначено</div>
+      <div class="stat"><b>🖤</b>dark premium × gaming</div>
+    </div>
+  </section>
+  <div class="toolbar"><h2>Каталог бажань</h2><div class="hint">Посилання та ціни додамо разом</div></div>
+  <main class="grid" id="grid">
+    <div class="empty">Тут поки порожньо — надішли назви подарунків і посилання, і я допоможу наповнити каталог.</div>
+  </main>
+  <footer class="footer"><span>KINDER'S WISHLIST</span><span>Зроблено з ❤️ та трохи RGB</span></footer>
+</div>
+<script>
+const gifts = [];
+const bought = new Set();
+function render(){
+ const grid=document.getElementById('grid');
+ document.getElementById('count').textContent=gifts.length;
+ document.getElementById('done').textContent=bought.size;
+ if(!gifts.length){grid.innerHTML='<div class="empty">Тут поки порожньо — надішли назви подарунків і посилання, і я допоможу наповнити каталог.</div>';return}
+ grid.innerHTML='';
+ gifts.forEach((g,i)=>{
+  const card=document.createElement('article');card.className='card'+(bought.has(i)?' bought':'');
+  const photo=g.image?'<img src="'+g.image+'" alt="">':'<div class="placeholder">✦</div>';
+  card.innerHTML=(g.priority?'<div class="pill">★ ПРІОРИТЕТ</div>':'')+'<div class="photo">'+photo+'</div><div class="body"><div class="category">'+(g.category||'WISHLIST ITEM')+'</div><h3>'+g.name+'</h3><div class="desc">'+(g.description||'Подарунок зі списку бажань')+'</div><div class="price">'+(g.price||'Ціну уточнити')+'</div><div class="actions"><a class="btn primary" href="'+(g.url||'#')+'" target="_blank" rel="noopener">Перейти до магазину ↗</a><button class="btn secondary" data-i="'+i+'">'+(bought.has(i)?'Позначено ✓':'Куплено?')+'</button></div></div>';
+  card.querySelector('button').addEventListener('click',()=>{bought.has(i)?bought.delete(i):bought.add(i);render()});
+  grid.appendChild(card);
+ });
+}
+render();
+</script>
+</body>
+</html>
