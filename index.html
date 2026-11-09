@@ -113,8 +113,8 @@ const gifts = [];
 const bought = new Set();
 function render(){
  const grid=document.getElementById('grid');
- document.getElementById('count').textContent=gifts.length;
- document.getElementById('done').textContent=bought.size;
+ document.getElementById('count').textContent=document.querySelectorAll('section .grid .card').length+gifts.length;
+ document.getElementById('done').textContent=document.querySelectorAll('.card.bought').length+bought.size;
  if(!gifts.length){grid.innerHTML='<div class="empty">Тут поки порожньо — надішли назви подарунків і посилання, і я допоможу наповнити каталог.</div>';return}
  grid.innerHTML='';
  gifts.forEach((g,i)=>{
