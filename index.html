@@ -12,6 +12,12 @@
 .hero{max-width:760px;margin-bottom:34px}.eyebrow{color:var(--red);font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}.hero h1{font-size:clamp(42px,8vw,76px);line-height:.98;letter-spacing:-.055em;margin:14px 0}.hero h1 em{font-style:normal;color:var(--red)}.hero p{color:var(--muted);font-size:16px;line-height:1.6;margin:16px 0 0}.stats{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 34px}.stat{background:#12141ddd;border:1px solid var(--line);padding:12px 16px;border-radius:14px;color:var(--muted);font-size:12px}.stat b{display:block;color:var(--text);font-size:18px;margin-bottom:2px}
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:32px 0 18px}.toolbar h2{font-size:21px;margin:0;letter-spacing:-.03em}.hint{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.card{background:linear-gradient(155deg,#191c27,#10121a 70%);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:.2s;position:relative}.card:hover{transform:translateY(-4px);border-color:#55505b;box-shadow:0 16px 40px #0007}.photo{height:190px;background:linear-gradient(135deg,#242838,#141620);display:flex;align-items:center;justify-content:center;color:#737b91;font-size:12px;overflow:hidden}.photo img{width:100%;height:100%;object-fit:cover}.placeholder{font-size:42px;opacity:.75}.body{padding:17px}.category{color:var(--gold);font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:800}.body h3{font-size:18px;margin:8px 0 6px}.desc{color:var(--muted);font-size:13px;min-height:34px;line-height:1.45}.price{font-size:19px;font-weight:800;margin:13px 0}.actions{display:flex;gap:8px}.btn{border:0;border-radius:10px;padding:11px 13px;font-weight:750;cursor:pointer;text-decoration:none;text-align:center;font-size:12px}.primary{background:var(--red);color:white;flex:1}.secondary{background:#252938;color:#d9dceb}.bought{opacity:.55}.bought .body h3{text-decoration:line-through}.pill{position:absolute;top:12px;left:12px;background:#251c20;border:1px solid #71313d;color:#ff8291;padding:6px 9px;border-radius:99px;font-size:10px;font-weight:800}.empty{border:1px dashed #3b4052;border-radius:18px;padding:34px;text-align:center;color:var(--muted);grid-column:1/-1}.footer{margin-top:55px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#777f93;font-size:11px}
 @media(max-width:600px){.wrap{padding:20px 14px 50px}.top{margin-bottom:42px}.tag{font-size:10px}.photo{height:170px}.toolbar{align-items:flex-end}}
+
+.reservation{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.reservation label{font-size:11px;color:var(--muted);font-weight:700}
+.reservation select{background:#252938;color:var(--text);border:1px solid #41475b;border-radius:9px;padding:9px;font:inherit;font-size:12px;max-width:100%}
+.reservation .state{font-size:11px;color:var(--muted)}
+.reservation select:disabled{opacity:.6}
 </style>
 </head>
 <body>
@@ -138,7 +144,63 @@
   </section>
   <footer class="footer"><span>KINDER'S WISHLIST</span><span>Зроблено з ❤️ та трохи RGB</span></footer>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL = 'https://ejubtgqgvnazetkwhamb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_06PwF4N0qa8iM39jJCJYrA_PpFUuts3';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const giftIds = {
+ 'Протигаз ГП-9':'gp9',
+ 'Meta Quest 3 · 512 GB':'meta-quest-3-512',
+ 'Яке-небудь оверсайз худі':'oversize-hoodie',
+ 'Skechers Arch Fit Crosser 205345 BLK':'skechers-arch-fit',
+ 'MCHOSE V9 Turbo+ · Steel Black · повний комплект':'mchose-v9-turbo',
+ 'Попкорниця-казан Комбо Міні':'popcorn-combo-mini',
+ 'Baseus Adaman Metal · 24 000 mAh · 140 W':'baseus-adaman-140w'
+};
+const statusLabels = {available:'🟢 Вільно', reserved:'🟡 Заброньовано', bought:'🔴 Куплено'};
+async function setupReservations(){
+ const cards = [...document.querySelectorAll('section .grid .card')];
+ const mainSection = [...document.querySelectorAll('section')].find(s => s.querySelector('.toolbar h2')?.textContent.trim()==='Мій вішлист');
+ if(!mainSection) return;
+ const mainCards = [...mainSection.querySelectorAll('.grid .card')];
+ for(const card of mainCards){
+  const name = card.querySelector('h3')?.textContent.trim();
+  const id = giftIds[name];
+  if(!id) continue;
+  const body = card.querySelector('.body');
+  const wrap = document.createElement('div');
+  wrap.className='reservation';
+  const label=document.createElement('label');
+  label.textContent='Статус подарунка';
+  label.htmlFor='status-'+id;
+  const select=document.createElement('select');
+  select.id='status-'+id;
+  select.setAttribute('aria-label','Статус подарунка: '+name);
+  for(const [value,text] of Object.entries(statusLabels)){
+   const option=document.createElement('option'); option.value=value; option.textContent=text; select.appendChild(option);
+  }
+  const note=document.createElement('span'); note.className='state'; note.textContent='Завантаження…';
+  wrap.append(label,select,note); body.appendChild(wrap);
+  select.disabled=true;
+  select.addEventListener('change',async()=>{
+   select.disabled=true; note.textContent='Збереження…';
+   const {error}=await db.from('gift_reservations').upsert({gift_id:id,status:select.value,updated_at:new Date().toISOString()},{onConflict:'gift_id'});
+   if(error){note.textContent='Помилка збереження'; console.error(error); select.value=select.dataset.saved||'available';}
+   else{select.dataset.saved=select.value;note.textContent='Збережено для всіх';}
+   select.disabled=false;
+  });
+ }
+ const {data,error}=await db.from('gift_reservations').select('gift_id,status');
+ if(error){document.querySelectorAll('.reservation .state').forEach(n=>n.textContent='Не вдалося завантажити');console.error(error);return;}
+ const states=Object.fromEntries((data||[]).map(x=>[x.gift_id,x.status]));
+ document.querySelectorAll('.reservation select').forEach(select=>{
+  const id=select.id.replace('status-',''); const status=states[id]||'available';
+  select.value=status;select.dataset.saved=status;select.disabled=false;
+  select.parentElement.querySelector('.state').textContent='Спільний статус';
+ });
+}
+setupReservations();
 const gifts = [];
 const bought = new Set();
 function render(){
