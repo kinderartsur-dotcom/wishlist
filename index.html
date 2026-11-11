@@ -215,7 +215,7 @@ async function setupReservations(){
    try {
     await supabaseRequest('gift_reservations?on_conflict=gift_id',{method:'POST',body:JSON.stringify({gift_id:id,status:select.value,updated_at:new Date().toISOString()})});
     select.dataset.saved=select.value;note.textContent='Збережено для всіх';
-   } catch(error){note.textContent='Помилка збереження'; console.error(error); select.value=select.dataset.saved||'available';}
+   } catch(error){note.textContent='Помилка: '+String(error.message||error).slice(0,110); console.error('Помилка бронювання подарунка:',error); select.value=select.dataset.saved||'available';}
    select.disabled=false;
   });
  }
