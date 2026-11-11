@@ -176,7 +176,7 @@ async function setupReservations(){
   const t=el.textContent.toUpperCase();
   if(t.includes('ДУЖЕ ВИСОКИЙ') || t.includes('ДУЖЕ ВАЖЛИВИЙ')) el.classList.add('priority-very-high');
   else if(t.includes('ВИСОКИЙ')) el.classList.add('priority-high');
-  else if(t.includes('СЕРЕДНІЙ')) el.classList.add('priority-medium');
+  else el.classList.add('priority-medium');
  });
  const mainSection = [...document.querySelectorAll('section')].find(s => s.querySelector('.toolbar h2')?.textContent.trim()==='Мій вішлист');
  if(!mainSection) return;
