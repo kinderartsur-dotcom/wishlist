@@ -168,7 +168,10 @@ async function supabaseRequest(path, options={}) {
   }
  });
  if (!response.ok) throw new Error(await response.text());
- return response.status === 204 ? null : response.json();
+ const responseText = await response.text();
+ if (!responseText.trim()) return null;
+ try { return JSON.parse(responseText); }
+ catch { return null; }
 }
 const giftIds = {
  'Протигаз ГП-9':'gp9',
