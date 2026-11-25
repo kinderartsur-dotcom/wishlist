@@ -235,7 +235,7 @@ async function setupReservations(){
  }
  let data=[];
  try { data=await supabaseRequest('gift_reservations?select=gift_id,status'); }
- catch(error){document.querySelectorAll('.reservation .state').forEach(n=>n.textContent='Помилка з’єднання');console.error(error);return;}
+ catch(error){const message=String(error.message||error).replace(/\s+/g,' ').slice(0,100);document.querySelectorAll('.reservation .state').forEach(n=>n.textContent='Помилка БД: '+message);console.error('Помилка завантаження статусів:',error);return;}
  const states=Object.fromEntries((data||[]).map(x=>[x.gift_id,x.status]));
  document.querySelectorAll('.reservation select').forEach(select=>{
   const id=select.id.replace('status-',''); const status=states[id]||'available';
