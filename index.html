@@ -170,7 +170,6 @@ async function supabaseRequest(path, options={}) {
   ...options,
   headers: {
    apikey: SUPABASE_KEY,
-   Authorization: 'Bearer ' + SUPABASE_KEY,
    'Content-Type': 'application/json',
    Prefer: options.method === 'POST' ? 'resolution=merge-duplicates,return=minimal' : 'return=minimal',
    ...(options.headers || {})
